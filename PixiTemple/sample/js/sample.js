@@ -26,104 +26,104 @@ el.appendChild(app.view);
  * 1.4 スプライトや図形を表示する
  */
 
-// /**
-//  * スプライト(PIXI.Sprite)
-//  */
-// // 画像を読み込み、テクスチャにする
-// let butaTexture = new PIXI.Texture.from('./img/buta.png');
-// // 読み込んだテクスチャから、スプライトを生成する
-// let butaSprite = new PIXI.Sprite(butaTexture);
-// // ぶたの基準点を設定(%) 0.5はそれぞれの中心 位置・回転の基準になる
-// butaSprite.anchor.x = 0.5;
-// butaSprite.anchor.y = 0.5;
-// // ぶたの位置決め
-// butaSprite.x = app.screen.width / 2;        // ビューの幅 / 2 = x中央
-// butaSprite.y = app.screen.height / 2;       // ビューの高さ / 2 = y中央
-// // 表示領域に追加する
-// app.stage.addChild(butaSprite);
+/**
+ * スプライト(PIXI.Sprite)
+ */
+// 画像を読み込み、テクスチャにする
+let butaTexture = new PIXI.Texture.from('./img/buta.png');
+// 読み込んだテクスチャから、スプライトを生成する
+let butaSprite = new PIXI.Sprite(butaTexture);
+// ぶたの基準点を設定(%) 0.5はそれぞれの中心 位置・回転の基準になる
+butaSprite.anchor.x = 0.5;
+butaSprite.anchor.y = 0.5;
+// ぶたの位置決め
+butaSprite.x = app.screen.width / 2;        // ビューの幅 / 2 = x中央
+butaSprite.y = app.screen.height / 2;       // ビューの高さ / 2 = y中央
+// 表示領域に追加する
+app.stage.addChild(butaSprite);
 
 
-// // 別のぶたを作る
-// let butaSprite2 = new PIXI.Sprite(butaTexture); // テクスチャは同じものを使いまわせる
-// // 基準点を設定 set()を使うとx,y同時に設定できる
-// butaSprite2.anchor.set(0.5);
-// // 大きさを変えてみる
-// butaSprite2.scale.x = 1.5;
-// butaSprite2.scale.y = 1.5;
-// // 半透明にしてみる
-// butaSprite2.alpha = 0.9;
-// // 回転してみる
-// butaSprite2.rotation = Math.PI / 3;          // (ラジアンで指定)
-// // butaSprite2.angle = 60;                        // (度数で指定)
-// // 色味を変えてみる
-// butaSprite2.tint = 0xffff00;                // (基準は0xffffff)
+// 別のぶたを作る
+let butaSprite2 = new PIXI.Sprite(butaTexture); // テクスチャは同じものを使いまわせる
+// 基準点を設定 set()を使うとx,y同時に設定できる
+butaSprite2.anchor.set(0.5);
+// 大きさを変えてみる
+butaSprite2.scale.x = 1.5;
+butaSprite2.scale.y = 1.5;
+// 半透明にしてみる
+butaSprite2.alpha = 0.9;
+// 回転してみる
+butaSprite2.rotation = Math.PI / 3;          // (ラジアンで指定)
+// butaSprite2.angle = 60;                        // (度数で指定)
+// 色味を変えてみる
+butaSprite2.tint = 0xffff00;                // (基準は0xffffff)
 
-// butaSprite2.x = app.screen.width / 2 + 150;
-// butaSprite2.y = app.screen.height / 2;
-// app.stage.addChild(butaSprite2);
-
-
-
-// /** 
-//  * 図形(PIXI.Graphics) draw~~()はここに書いたもの以外にもあります
-//  */
-
-// // 楕円を作る
-// let ellipse = new PIXI.Graphics()       // メソッドチェーンで描画するので、;(セミコロン)を付けない   
-// .beginFill(0xff0000)                    // endFill()までの描画に対する塗りつぶし色指定
-// .drawEllipse(0,0,30,20)                 // (中心のx座標, 中心のy座標, 幅, 高さ)
-// .endFill();                              // ここまでに描いた図形を塗りつぶす
-
-// // 基準点を設定(px) 図形(PIXI.Graphicsにはpivotはないので注意)
-// ellipse.pivot.x = 15
-// ellipse.pivot.y = 10
-// ellipse.x = 100;
-// ellipse.y = 100;     
-// ellipse.rotation = Math.PI / 6;
-// app.stage.addChild(ellipse);
+butaSprite2.x = app.screen.width / 2 + 150;
+butaSprite2.y = app.screen.height / 2;
+app.stage.addChild(butaSprite2);
 
 
 
-// // 多角形を作る
-// let polygon = new PIXI.Graphics()
-// .beginFill(0xffffff, 0.8)    // 第二引数で透明度を指定できる
-// .drawPolygon([  // 頂点を配列で渡す [x1,y1,x2,y2,....]
-//                 0, 0,
-//                 25, -20,
-//                 50, 0,
-//                 50, 20,
-//                 25, 40,
-//                 0, 20
-//             ])
-// .endFill();
-// polygon.x = 100;
-// polygon.y = 100;
-// app.stage.addChild(polygon)
+/** 
+ * 図形(PIXI.Graphics) draw~~()はここに書いたもの以外にもあります
+ */
+
+// 楕円を作る
+let ellipse = new PIXI.Graphics()       // メソッドチェーンで描画するので、;(セミコロン)を付けない   
+.beginFill(0xff0000)                    // endFill()までの描画に対する塗りつぶし色指定
+.drawEllipse(0,0,30,20)                 // (中心のx座標, 中心のy座標, 幅, 高さ)
+.endFill();                              // ここまでに描いた図形を塗りつぶす
+
+// 基準点を設定(px) 図形(PIXI.Graphicsにはpivotはないので注意)
+ellipse.pivot.x = 15
+ellipse.pivot.y = 10
+ellipse.x = 100;
+ellipse.y = 100;     
+ellipse.rotation = Math.PI / 6;
+app.stage.addChild(ellipse);
 
 
-// // 円を作る(テクスチャを貼る)
-// let circle = new PIXI.Graphics()
-// // 塗りつぶしのかわりにテクスチャを貼る (テクスチャ,色味(リファレンスには背景色って書いてあるからバグかも),透明度,テクスチャのスケール・位置情報)
-// .beginTextureFill(butaTexture, 0x00ffff, 1, new PIXI.Matrix(1,0,0,1,-35,-35))  
-// .lineStyle(2, 0x000000)     // 線のスタイル指定(幅, 色) これ以外に透明度, alignment(線の位置)などが指定可能
-// .drawCircle(0,0,30)   
-// .endFill();
-// circle.x = 200;
-// circle.y = 100;
-// app.stage.addChild(circle);
+
+// 多角形を作る
+let polygon = new PIXI.Graphics()
+.beginFill(0xffffff, 0.8)    // 第二引数で透明度を指定できる
+.drawPolygon([  // 頂点を配列で渡す [x1,y1,x2,y2,....]
+                0, 0,
+                25, -20,
+                50, 0,
+                50, 20,
+                25, 40,
+                0, 20
+            ])
+.endFill();
+polygon.x = 100;
+polygon.y = 100;
+app.stage.addChild(polygon)
 
 
-// // 線を描く
-// let line = new PIXI.Graphics()
-// .lineStyle(1, 0x000000)   // 線のスタイル指定(幅, 色) これ以外に透明度, alignment(線の位置)などが指定可能
-// .moveTo(0,0)              // 開始点に移動
-// .lineTo(50,0)             // (x,y)に向かって直線を引く
-// .lineTo(25,-25)
-// .moveTo(50,0)             // 現在地を移動        
-// .lineTo(25,25);         
-// line.x = 300;
-// line.y = 100;
-// app.stage.addChild(line)
+// 円を作る(テクスチャを貼る)
+let circle = new PIXI.Graphics()
+// 塗りつぶしのかわりにテクスチャを貼る (テクスチャ,色味(リファレンスには背景色って書いてあるからバグかも),透明度,テクスチャのスケール・位置情報)
+.beginTextureFill(butaTexture, 0x00ffff, 1, new PIXI.Matrix(1,0,0,1,-35,-35))  
+.lineStyle(2, 0x000000)     // 線のスタイル指定(幅, 色) これ以外に透明度, alignment(線の位置)などが指定可能
+.drawCircle(0,0,30)   
+.endFill();
+circle.x = 200;
+circle.y = 100;
+app.stage.addChild(circle);
+
+
+// 線を描く
+let line = new PIXI.Graphics()
+.lineStyle(1, 0x000000)   // 線のスタイル指定(幅, 色) これ以外に透明度, alignment(線の位置)などが指定可能
+.moveTo(0,0)              // 開始点に移動
+.lineTo(50,0)             // (x,y)に向かって直線を引く
+.lineTo(25,-25)
+.moveTo(50,0)             // 現在地を移動        
+.lineTo(25,25);         
+line.x = 300;
+line.y = 100;
+app.stage.addChild(line)
 
 
 
