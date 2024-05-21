@@ -132,43 +132,43 @@ app.stage.addChild(line)
  * 1.5 コンテナを作ってオブジェクトをまとめる
  */
 
-// // 新しいコンテナを生成
-// let sampleContainer = new PIXI.Container();
+// 新しいコンテナを生成
+let sampleContainer = new PIXI.Container();
 
-// // ステージのあたりに作ったコンテナを配置する
-// sampleContainer.x = 100;
-// sampleContainer.y = app.screen.height - 200;
-// app.stage.addChild(sampleContainer);
+// ステージのあたりに作ったコンテナを配置する
+sampleContainer.x = 100;
+sampleContainer.y = app.screen.height - 200;
+app.stage.addChild(sampleContainer);
 
-// // 新しいコンテナにオブジェクトを入れていく
-// // 背景色用の長方形
-// let background = new PIXI.Graphics()
-// .beginFill(0xffff00)
-// .drawRect(0,0,400,200)
-// .endFill();
+// 新しいコンテナにオブジェクトを入れていく
+// 背景色用の長方形
+let background = new PIXI.Graphics()
+.beginFill(0xffff00)
+.drawRect(0,0,400,200)
+.endFill();
 
-// // コンテナに入れる
-// sampleContainer.addChild(background);
+// コンテナに入れる
+sampleContainer.addChild(background);
 
-// // 大量のロッカーをぶち込む
-// let lockerTexture = new PIXI.Texture.from('./img/locker.png')
-// let lockers = new Array()
-// for (let i=0; i < 2; i++) {
-//     for(let j=0; j < 13; j++ ) {
-//         let locker = new PIXI.Sprite(lockerTexture);
-//         locker.scale.x = locker.scale.y = 0.25;
-//         locker.x = j * 30 + 10;
-//         locker.y = i * 100 + 20;
-//         sampleContainer.addChild(locker);
-//         lockers.push(locker)
-//     }
-// }
+// 大量のロッカーをぶち込む
+let lockerTexture = new PIXI.Texture.from('./img/locker.png')
+let lockers = new Array()
+for (let i=0; i < 2; i++) {
+    for(let j=0; j < 13; j++ ) {
+        let locker = new PIXI.Sprite(lockerTexture);
+        locker.scale.x = locker.scale.y = 0.25;
+        locker.x = j * 30 + 10;
+        locker.y = i * 100 + 20;
+        sampleContainer.addChild(locker);
+        lockers.push(locker)
+    }
+}
 
-// // コンテナを適当に動かしたり回転させたりしてみる
-// // sampleContainer.x += 50;
-// // sampleContainer.y -= 50;
-// // sampleContainer.rotation = -Math.PI / 3;
-// // sampleContainer.scale.x = sampleContainer.scale.y = 1.5;
+// コンテナを適当に動かしたり回転させたりしてみる
+// sampleContainer.x += 50;
+// sampleContainer.y -= 50;
+// sampleContainer.rotation = -Math.PI / 3;
+// sampleContainer.scale.x = sampleContainer.scale.y = 1.5;
 
 
 
@@ -177,24 +177,24 @@ app.stage.addChild(line)
  * 1.6 オブジェクトがクリックされたときになんかする
  */
 
-// // 中央のぶたのインタラクション(イベント)を有効化
-// butaSprite.interactive = true;
+// 中央のぶたのインタラクション(イベント)を有効化
+butaSprite.interactive = true;
 
-// // ぶたにマウスが重なった時、表示をポインターにする
-// butaSprite.buttonMode = true;
+// ぶたにマウスが重なった時、表示をポインターにする
+butaSprite.buttonMode = true;
 
-// // 中央のぶたスプライトにクリックイベントのリスナーを設定する
-// // オブジェクト.on('イベントの種類', イベントハンドラ) で設定する
-// butaSprite.on('pointertap',showAlert);
+// 中央のぶたスプライトにクリックイベントのリスナーを設定する
+// オブジェクト.on('イベントの種類', イベントハンドラ) で設定する
+butaSprite.on('pointertap',showAlert);
 
-// // イベントハンドラの定義
-// function showAlert(e) {
-//     console.log(e);
-//     alert('ぶたがクリック(タップ)されました');
-// }
+// イベントハンドラの定義
+function showAlert(e) {
+    console.log(e);
+    alert('ぶたがクリック(タップ)されました');
+}
 
-// // リスナーを解除する(on()の逆)
-// // butaSprite.off('pointertap',showAlert);
+// リスナーを解除する(on()の逆)
+// butaSprite.off('pointertap',showAlert);
 
 
 
@@ -204,48 +204,48 @@ app.stage.addChild(line)
  * 1.7 オブジェクトをドラッグして動かす
  */
 
-// // でかいぶたのインタラクション(イベント)を有効化
-// butaSprite2.interactive = true;
+// でかいぶたのインタラクション(イベント)を有効化
+butaSprite2.interactive = true;
 
-// // ぶたにマウスが重なった時、表示をポインターにする
-// butaSprite2.buttonMode = true;
+// ぶたにマウスが重なった時、表示をポインターにする
+butaSprite2.buttonMode = true;
 
-// // でかいぶたスプライトにイベントリスナーを設定する
-// // .on()をつなげて連続で設定することができる
-// butaSprite2.on('pointerdown',  onButaPointerDown)    // ぶたの上でマウスがクリック(orタップ)されたとき
-//            .on('pointerup',   onButaPointerUp);      // ぶたの上でマウスクリックが外れたとき
+// でかいぶたスプライトにイベントリスナーを設定する
+// .on()をつなげて連続で設定することができる
+butaSprite2.on('pointerdown',  onButaPointerDown)    // ぶたの上でマウスがクリック(orタップ)されたとき
+           .on('pointerup',   onButaPointerUp);      // ぶたの上でマウスクリックが外れたとき
 
 
 
-// // ぶたの上でマウスがクリック(orタップ)されたときの処理定義
-// function onButaPointerDown() {
-//     butaSprite2.on('pointermove', moveButa);    // ドラッグイベントリスナーを設定
+// ぶたの上でマウスがクリック(orタップ)されたときの処理定義
+function onButaPointerDown() {
+    butaSprite2.on('pointermove', moveButa);    // ドラッグイベントリスナーを設定
  
-//     // 分かる人向けTIPS: 
-//     // ドラッグ処理が重かったり、でかいぶたが他のオブジェクトの下に入ったりするとpointerupを拾えず、
-//     // ドラッグイベントのリスナーが解除されない場合がある。
-//     // こうなるとマウスをクリックした状態でなくても、でかいぶたにマウスが重なるとぶたが追従してくる。
-//     // これはwindowにマウスクリック解除時のリスナーを設定することで解除できる...かも
-//     // window.addEventListener('pointerup', onButaPointerUp);
-// }
+    // 分かる人向けTIPS: 
+    // ドラッグ処理が重かったり、でかいぶたが他のオブジェクトの下に入ったりするとpointerupを拾えず、
+    // ドラッグイベントのリスナーが解除されない場合がある。
+    // こうなるとマウスをクリックした状態でなくても、でかいぶたにマウスが重なるとぶたが追従してくる。
+    // これはwindowにマウスクリック解除時のリスナーを設定することで解除できる...かも
+    // window.addEventListener('pointerup', onButaPointerUp);
+}
 
 
-// // ぶたをドラッグ中の処理定義
-// function moveButa(e) {
-//     // PIXI.interaction.InteractionData.getLoalPosition(オブジェクト)
-//     // イベント発火地点(=ドラッグ中のマウス位置)がapp.stageのどこの位置にあるかを取得
-//     let position = e.data.getLocalPosition(app.stage);
+// ぶたをドラッグ中の処理定義
+function moveButa(e) {
+    // PIXI.interaction.InteractionData.getLoalPosition(オブジェクト)
+    // イベント発火地点(=ドラッグ中のマウス位置)がapp.stageのどこの位置にあるかを取得
+    let position = e.data.getLocalPosition(app.stage);
 
-//     // 位置変更
-//     butaSprite2.x = position.x;
-//     butaSprite2.y = position.y;
-// }
+    // 位置変更
+    butaSprite2.x = position.x;
+    butaSprite2.y = position.y;
+}
 
 
-// // ぶたの上でマウスクリックが外れたときの処理定義
-// function onButaPointerUp() {
-//     butaSprite2.off('pointermove', moveButa);    // ドラッグイベントリスナーを解除
-// }
+// ぶたの上でマウスクリックが外れたときの処理定義
+function onButaPointerUp() {
+    butaSprite2.off('pointermove', moveButa);    // ドラッグイベントリスナーを解除
+}
 
 
 
