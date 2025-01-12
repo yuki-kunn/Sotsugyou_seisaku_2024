@@ -13,7 +13,16 @@ const GameCanvas = () => {
       "https://script.googleusercontent.com/macros/echo?user_content_key=EugM9cuzbjQCHzOL1YPpRLecKREIpACw-hXn4e1tMMAcbFLJg0ybOxFhRKtiHg4UN3eRy_mP1Y3frFeqGD_Uxvko9CVK5I1Bm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnOFUigQjl745NXxhyGs8MfM-OK1UkkUNaC8LpJP3GaUizOyxI_gLJxW5C5DMWl84Z1HQwMBubtfPnjaVwtVr6anN_Ni-iJkYIg&lib=McBanqb4XeEBemR2SV5_aDeu9HG4VFNme"
     )
       .then((response) => response.json())
-      .then((data) => setStoryTexts(data.items))
+      .then((data) => {
+        const cleanedData = data.items.map((item) => ({
+          name: item.name || "",
+          text: item.text || "",
+          image: item.image || "",
+          sounds: item.sounds || "",
+          se: item.se || ""
+        }));
+        setStoryTexts(cleanedData);
+      })
       .catch((error) => console.error("Error fetching scenario data:", error));
   }, []);
 
@@ -38,12 +47,34 @@ const GameCanvas = () => {
     // 主人公スプライトの設定
     const character = new PIXI.Sprite();
     character.name = "character";
-    character.x = 50; // 左端に配置
-    character.y = app.screen.height / 2 - 320; // 縦方向中央
+    character.x = 50;
+    character.y = app.screen.height / 2 - 320;
     character.width = 700;
     character.height = 1050;
-    character.visible = false; // 初期状態は非表示
+    character.visible = false;
     app.stage.addChild(character);
+
+    // 封筒スプライトの設定
+    const futou = new PIXI.Sprite();
+    futou.name = "futou";
+    futou.x = app.screen.width / 2 - 250;
+    futou.y = app.screen.height / 2 - 225;
+    futou.width = 525;
+    futou.height = 375;
+    futou.visible = false;
+    app.stage.addChild(futou);
+
+    // shashinスプライトの設定
+    const shashin = new PIXI.Sprite();
+    shashin.name = "shashin";
+    shashin.anchor.set(0.5); // 中心を基準に回転させる
+    shashin.x = app.screen.width / 2;
+    shashin.y = app.screen.height / 2;
+    shashin.width = 500;
+    shashin.height = 300;
+    shashin.rotation = 0.1; // 少し傾ける（ラジアン値）
+    shashin.visible = false;
+    app.stage.addChild(shashin);
 
     // テキストボックスの設定
     const style = new PIXI.TextStyle({
@@ -119,20 +150,85 @@ const GameCanvas = () => {
         (child) => child instanceof PIXI.Text && child.style.fontSize === 20
       );
 
+      const background = appRef.current.stage.children.find(
+        (child) => child instanceof PIXI.Sprite && child.name === "background"
+      );
+
       const character = appRef.current.stage.children.find(
         (child) => child instanceof PIXI.Sprite && child.name === "character"
       );
+
+      const futou = appRef.current.stage.children.find(
+        (child) => child instanceof PIXI.Sprite && child.name === "futou"
+      );
+
+      const shashin = appRef.current.stage.children.find(
+        (child) => child instanceof PIXI.Sprite && child.name === "shashin"
+      );
+
+      const stage = appRef.current.stage;
 
       const currentStory = storyTexts[textIndex] || {};
       storyText.text = currentStory.text || "";
       nameText.text = currentStory.name || "";
 
       const imagePath = currentStory.image;
-      if (imagePath) {
+
+      // 背景画像の切り替え
+      if (background && imagePath === "assets/car.png") {
+        background.texture = PIXI.Texture.from(imagePath);
+        character.visible = false;
+        futou.visible = false;
+        shashin.visible = false;
+      } else if (
+        imagePath === "assets/futou.png" ||
+        imagePath === "assets/futou_open.png"
+      ) {
+        futou.texture = PIXI.Texture.from(imagePath);
+        futou.visible = true;
+        character.visible = false;
+        shashin.visible = false;
+      } else if (
+        imagePath === "assets/help.png" ||
+        imagePath === "assets/shashin.png"
+      ) {
+        shashin.texture = PIXI.Texture.from(imagePath);
+        shashin.visible = true;
+        character.visible = false;
+        futou.visible = false;
+      } else if (imagePath) {
         character.texture = PIXI.Texture.from(imagePath);
         character.visible = true;
+        futou.visible = false;
+        shashin.visible = false;
       } else {
         character.visible = false;
+        futou.visible = false;
+        shashin.visible = false;
+      }
+
+      // 画面揺れアニメーション
+      if (currentStory.se === "sway") {
+        let elapsed = 0;
+        const swayDuration = 1000; // 揺れの継続時間 (ミリ秒)
+        const swayAmplitude = 10; // 揺れの振幅 (ピクセル)
+
+        const swayTicker = new PIXI.Ticker();
+        swayTicker.add((delta) => {
+          elapsed += delta * 16.66; // ミリ秒に変換
+          if (elapsed < swayDuration) {
+            const offsetX = Math.sin(elapsed * 0.05) * swayAmplitude;
+            const offsetY = Math.cos(elapsed * 0.05) * swayAmplitude;
+            stage.x = offsetX;
+            stage.y = offsetY;
+          } else {
+            // 揺れ終了時に位置をリセット
+            stage.x = 0;
+            stage.y = 0;
+            swayTicker.stop();
+          }
+        });
+        swayTicker.start();
       }
     }
   }, [textIndex, storyTexts]);
