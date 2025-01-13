@@ -1,15 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import GameCanvas from "./Prologue";
 
 const App = () => {
   const [showGame, setShowGame] = useState(false);
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
 
   const handleStart = () => {
     setShowGame(true);
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
-    <div>
+    <div
+      style={{
+        width: `${windowSize.width}px`,
+        height: `${windowSize.height}px`
+      }}
+    >
       {!showGame ? (
         <div
           style={{
@@ -17,14 +37,14 @@ const App = () => {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            height: "100vh",
+            height: "100%",
             backgroundColor: "#282c34",
             color: "#ffffff",
             textAlign: "center"
           }}
         >
           <h1 style={{ fontSize: "3rem", marginBottom: "1rem" }}>
-            Welcome to the Visual Novel!
+            LostConnection
           </h1>
           <button
             onClick={handleStart}
