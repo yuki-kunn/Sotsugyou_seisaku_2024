@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
+import { useNavigate } from "react-router-dom";
 
 const GameCanvas = () => {
   const canvasRef = useRef(null);
   const appRef = useRef(null);
   const [textIndex, setTextIndex] = useState(0);
   const [storyTexts, setStoryTexts] = useState([]);
+  const navigate = useNavigate();
 
   // Google Apps Scriptからシナリオデータを取得
   useEffect(() => {
@@ -167,6 +169,10 @@ const GameCanvas = () => {
       nameText.text = currentStory.name || "";
 
       const imagePath = currentStory.image;
+
+      if (currentStory.text === "プロローグ～完～") {
+        navigate("/chapter1");
+      }
       // 背景画像の切り替え
       if (background && imagePath === "assets/car.png") {
         background.texture = PIXI.Texture.from(imagePath);
@@ -202,7 +208,7 @@ const GameCanvas = () => {
       // 画面揺れアニメーション
       if (currentStory.se === "sway") {
         let elapsed = 0;
-        const swayDuration = 1000; // 揺れの継続時間 (ミリ秒)
+        const swayDuration = 750; // 揺れの継続時間 (ミリ秒)
         const swayAmplitude = 10; // 揺れの振幅 (ピクセル)
         const swayTicker = new PIXI.Ticker();
         swayTicker.add((delta) => {
