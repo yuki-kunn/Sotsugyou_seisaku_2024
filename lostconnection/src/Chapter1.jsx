@@ -10,16 +10,16 @@ const Chapter1 = () => {
   // Google Apps ScriptからJSONデータを取得
   useEffect(() => {
     fetch(
-      "https://script.googleusercontent.com/macros/echo?user_content_key=NWzOAoT6bX7n_wuZNi1Rqit552YF2PSSvtOTx-poNa1HtozVAH2LxcRmIcTwsHXN2XTH1d1sD0rk-SuvFP2GvPGQRjPx9V4km5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnCbxVZwliODGVuHX1MCCyxgC52XzUSXsnU4_g_JQ7komMjsmHKHH1hPYlVzcvodNczL4e8iuWMp7HgmXvkQAkxfKUkP_ZAHL3k7BK1kh9SWT8lLzkfl8LyY&lib=McBanqb4XeEBemR2SV5_aDeu9HG4VFNme"
+      "https://script.google.com/macros/s/AKfycbwNZuwy1gBdrdl3apLPEIy-oKW76pi7EtNAKp9L0d4FEuDTU_gx268DUQA59qa9PJR-/exec?action=chaP1"
     )
       .then((response) => response.json())
       .then((data) => {
         const cleanedData = data.items.map((item) => ({
-          name: item.name || "???",
+          name: item.name || "",
           text: item.text || "",
           image: item.image || "",
-          sounds: item.sounds || "",
-          se: item.se || ""
+          character: item.character || "",
+          misaki: item.misaki || ""
         }));
         setStoryTexts(cleanedData);
       })
@@ -44,16 +44,25 @@ const Chapter1 = () => {
     background.height = app.screen.height;
     app.stage.addChild(background);
 
-    // 話者テキストスプライトの設定
-    const speakerTextStyle = new PIXI.TextStyle({
-      fontFamily: "Arial",
-      fontSize: 20,
-      fill: "#ffffff"
-    });
-    const speakerText = new PIXI.Text("", speakerTextStyle);
-    speakerText.x = app.screen.width / 2 - 400; // 適切な位置に配置
-    speakerText.y = app.screen.height / 1.2 - 40; // テキストボックスの上
-    app.stage.addChild(speakerText);
+    // 主人公スプライトの設定
+    const character = new PIXI.Sprite();
+    character.name = "character";
+    character.x = 50;
+    character.y = app.screen.height / 2 - 320;
+    character.width = 700;
+    character.height = 1050;
+    character.visible = false;
+    app.stage.addChild(character);
+
+    // Misakiスプライトの設定
+    const misaki = new PIXI.Sprite();
+    misaki.name = "misaki";
+    misaki.x = app.screen.width - 750;
+    misaki.y = app.screen.height / 2 - 320;
+    misaki.width = 700;
+    misaki.height = 1050;
+    misaki.visible = false;
+    app.stage.addChild(misaki);
 
     // テキストボックスの設定
     const textStyle = new PIXI.TextStyle({
@@ -78,8 +87,28 @@ const Chapter1 = () => {
     storyText.y = app.screen.height / 1.17;
     textBox.alpha = 0.8;
 
+    // 話者テキストスプライトの設定
+    const nameBox = new PIXI.Graphics();
+    nameBox.beginFill(0x4682b4);
+    nameBox.drawRoundedRect(0, 0, 150, 40, 10);
+    nameBox.endFill();
+    nameBox.x = textBox.x - textBox.width / 2 + 10;
+    nameBox.y = textBox.y - textBox.height / 2 - 40;
+    nameBox.alpha = 0.6;
+    app.stage.addChild(nameBox);
+
+    const nameStyle = new PIXI.TextStyle({
+      fontFamily: "Arial",
+      fontSize: 20,
+      fill: "#ffffff"
+    });
+    const nameText = new PIXI.Text("", nameStyle);
+    nameText.x = nameBox.x + 10;
+    nameText.y = nameBox.y + 10;
+
     app.stage.addChild(textBox);
     app.stage.addChild(storyText);
+    app.stage.addChild(nameText);
 
     const onResize = () => {
       app.renderer.resize(window.innerWidth, window.innerHeight);
@@ -113,6 +142,14 @@ const Chapter1 = () => {
         (child) => child instanceof PIXI.Text && child.style.fontSize === 20
       );
 
+      const character = appRef.current.stage.children.find(
+        (child) => child instanceof PIXI.Sprite && child.name === "character"
+      );
+
+      const misaki = appRef.current.stage.children.find(
+        (child) => child instanceof PIXI.Sprite && child.name === "misaki"
+      );
+
       const background = appRef.current.stage.children.find(
         (child) => child instanceof PIXI.Sprite && child.name === "background"
       );
@@ -120,7 +157,7 @@ const Chapter1 = () => {
       const currentStory = storyTexts[textIndex] || {};
 
       // 話者テキストを更新
-      speakerText.text = currentStory.name || "???";
+      speakerText.text = currentStory.name || "";
 
       // テキストを改行して設定
       const wrapText = (text, maxLength) =>
@@ -140,6 +177,22 @@ const Chapter1 = () => {
       // 背景画像の切り替え
       if (background && currentStory.image) {
         background.texture = PIXI.Texture.from(currentStory.image);
+      }
+
+      // 主人公スプライトの切り替え
+      if (character && currentStory.character) {
+        character.texture = PIXI.Texture.from(currentStory.character);
+        character.visible = true;
+      } else if (character) {
+        character.visible = false;
+      }
+
+      // Misakiスプライトの切り替え
+      if (misaki && currentStory.misaki) {
+        misaki.texture = PIXI.Texture.from(currentStory.misaki);
+        misaki.visible = true;
+      } else if (misaki) {
+        misaki.visible = false;
       }
     }
   }, [textIndex, storyTexts]);
