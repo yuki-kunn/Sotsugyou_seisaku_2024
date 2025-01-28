@@ -1,13 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
+import { useNavigate } from "react-router-dom";
 
 const Chapter1 = () => {
   const canvasRef = useRef(null);
   const appRef = useRef(null);
   const [textIndex, setTextIndex] = useState(0);
   const [storyTexts, setStoryTexts] = useState([]);
+  const [showChoices, setShowChoices] = useState(false);
+  const navigate = useNavigate();
 
-  // Google Apps ScriptからJSONデータを取得
+  // Google Apps Scriptからシナリオデータを取得
   useEffect(() => {
     fetch(
       "https://script.google.com/macros/s/AKfycbwNZuwy1gBdrdl3apLPEIy-oKW76pi7EtNAKp9L0d4FEuDTU_gx268DUQA59qa9PJR-/exec?action=chaP1"
@@ -18,8 +21,8 @@ const Chapter1 = () => {
           name: item.name || "",
           text: item.text || "",
           image: item.image || "",
-          character: item.character || "",
-          misaki: item.misaki || ""
+          sounds: item.sounds || "",
+          se: item.se || ""
         }));
         setStoryTexts(cleanedData);
       })
@@ -38,7 +41,7 @@ const Chapter1 = () => {
     canvasRef.current.appendChild(app.view);
 
     // 背景スプライトの設定
-    const background = PIXI.Sprite.from("assets/car.png");
+    const background = new PIXI.Sprite();
     background.name = "background";
     background.width = app.screen.width;
     background.height = app.screen.height;
@@ -54,46 +57,46 @@ const Chapter1 = () => {
     character.visible = false;
     app.stage.addChild(character);
 
-    // Misakiスプライトの設定
-    const misaki = new PIXI.Sprite();
-    misaki.name = "misaki";
-    misaki.x = app.screen.width - 750;
-    misaki.y = app.screen.height / 2 - 320;
-    misaki.width = 700;
-    misaki.height = 1050;
-    misaki.visible = false;
-    app.stage.addChild(misaki);
+    // 対話キャラクタースプライトの設定
+    const partner = new PIXI.Sprite();
+    partner.name = "partner";
+    partner.x = app.screen.width - 750;
+    partner.y = app.screen.height / 2 - 320;
+    partner.width = 700;
+    partner.height = 1050;
+    partner.visible = false;
+    app.stage.addChild(partner);
 
     // テキストボックスの設定
-    const textStyle = new PIXI.TextStyle({
+    const style = new PIXI.TextStyle({
       fontFamily: "Arial",
       fontSize: 24,
       fill: "#ffffff",
-      align: "left",
-      wordWrap: true,
-      wordWrapWidth: 800
+      align: "center"
     });
-    const storyText = new PIXI.Text("", textStyle);
+    const storyText = new PIXI.Text("", style);
     storyText.anchor.set(0.5);
 
-    const textBox = new PIXI.Graphics();
-    textBox.beginFill(0x4682b4);
-    textBox.drawRoundedRect(0, 0, 850, 110, 20);
-    textBox.endFill();
-    textBox.pivot.set(textBox.width / 2, textBox.height / 2);
-    textBox.x = app.screen.width / 2;
-    textBox.y = app.screen.height / 1.17;
+    const backgroundBox = new PIXI.Graphics();
+    backgroundBox.beginFill(0x4682b4);
+    backgroundBox.drawRoundedRect(0, 0, 850, 110, 20);
+    backgroundBox.endFill();
+    backgroundBox.pivot.set(backgroundBox.width / 2, backgroundBox.height / 2);
+    backgroundBox.x = app.screen.width / 2;
+    backgroundBox.y = app.screen.height / 1.17;
     storyText.x = app.screen.width / 2;
     storyText.y = app.screen.height / 1.17;
-    textBox.alpha = 0.8;
+    backgroundBox.alpha = 0.8;
+    app.stage.addChild(backgroundBox);
+    app.stage.addChild(storyText);
 
-    // 話者テキストスプライトの設定
+    // 話者名ボックスの設定
     const nameBox = new PIXI.Graphics();
     nameBox.beginFill(0x4682b4);
     nameBox.drawRoundedRect(0, 0, 150, 40, 10);
     nameBox.endFill();
-    nameBox.x = textBox.x - textBox.width / 2 + 10;
-    nameBox.y = textBox.y - textBox.height / 2 - 40;
+    nameBox.x = backgroundBox.x - backgroundBox.width / 2 + 10;
+    nameBox.y = backgroundBox.y - backgroundBox.height / 2 - 40;
     nameBox.alpha = 0.6;
     app.stage.addChild(nameBox);
 
@@ -105,9 +108,6 @@ const Chapter1 = () => {
     const nameText = new PIXI.Text("", nameStyle);
     nameText.x = nameBox.x + 10;
     nameText.y = nameBox.y + 10;
-
-    app.stage.addChild(textBox);
-    app.stage.addChild(storyText);
     app.stage.addChild(nameText);
 
     const onResize = () => {
@@ -120,7 +120,13 @@ const Chapter1 = () => {
     window.addEventListener("resize", onResize);
 
     const onClick = () => {
-      setTextIndex((prevIndex) => (prevIndex + 1) % storyTexts.length);
+      if (showChoices) {
+        // 選択肢が表示されている場合は、選択を処理
+        setShowChoices(false); // ボタンを非表示にする
+        setTextIndex((prevIndex) => (prevIndex + 1) % storyTexts.length);
+      } else {
+        setTextIndex((prevIndex) => (prevIndex + 1) % storyTexts.length);
+      }
     };
     app.view.addEventListener("click", onClick);
 
@@ -129,7 +135,7 @@ const Chapter1 = () => {
       app.view.removeEventListener("click", onClick);
       app.destroy(true, { children: true });
     };
-  }, [storyTexts]);
+  }, [storyTexts, showChoices]);
 
   // ストーリーと画像の更新
   useEffect(() => {
@@ -137,67 +143,144 @@ const Chapter1 = () => {
       const storyText = appRef.current.stage.children.find(
         (child) => child instanceof PIXI.Text && child.style.fontSize === 24
       );
-
-      const speakerText = appRef.current.stage.children.find(
+      const nameText = appRef.current.stage.children.find(
         (child) => child instanceof PIXI.Text && child.style.fontSize === 20
-      );
-
-      const character = appRef.current.stage.children.find(
-        (child) => child instanceof PIXI.Sprite && child.name === "character"
-      );
-
-      const misaki = appRef.current.stage.children.find(
-        (child) => child instanceof PIXI.Sprite && child.name === "misaki"
       );
 
       const background = appRef.current.stage.children.find(
         (child) => child instanceof PIXI.Sprite && child.name === "background"
       );
+      const character = appRef.current.stage.children.find(
+        (child) => child instanceof PIXI.Sprite && child.name === "character"
+      );
+      const partner = appRef.current.stage.children.find(
+        (child) => child instanceof PIXI.Sprite && child.name === "partner"
+      );
 
+      const stage = appRef.current.stage;
       const currentStory = storyTexts[textIndex] || {};
+      storyText.text = currentStory.text || "";
+      nameText.text = currentStory.name || "";
 
-      // 話者テキストを更新
-      speakerText.text = currentStory.name || "";
+      const imagePath = currentStory.image;
 
-      // テキストを改行して設定
-      const wrapText = (text, maxLength) =>
-        text
-          .split("")
-          .reduce(
-            (acc, char) =>
-              acc[acc.length - 1].length >= maxLength
-                ? [...acc, char]
-                : [...acc.slice(0, -1), acc[acc.length - 1] + char],
-            [""]
-          )
-          .join("\n");
-
-      storyText.text = wrapText(currentStory.text || "", 40);
+      if (currentStory.text === "プロローグ～完～") {
+        navigate("/chapter1");
+      }
 
       // 背景画像の切り替え
-      if (background && currentStory.image) {
-        background.texture = PIXI.Texture.from(currentStory.image);
-      }
-
-      // 主人公スプライトの切り替え
-      if (character && currentStory.character) {
-        character.texture = PIXI.Texture.from(currentStory.character);
-        character.visible = true;
-      } else if (character) {
+      if (
+        background &&
+        (imagePath === "assets/shashin.png" ||
+          imagePath === "assets/kichinaka.png" ||
+          imagePath === "assets/car.png")
+      ) {
+        background.texture = PIXI.Texture.from(imagePath);
         character.visible = false;
+        partner.visible = false;
+      } else if (imagePath === "assets/misaki.png") {
+        partner.texture = PIXI.Texture.from(imagePath);
+        partner.visible = true;
+      } else if (imagePath) {
+        character.texture = PIXI.Texture.from(imagePath);
+        character.visible = true;
+        partner.visible = false;
+      } else {
+        character.visible = false;
+        partner.visible = false;
       }
 
-      // Misakiスプライトの切り替え
-      if (misaki && currentStory.misaki) {
-        misaki.texture = PIXI.Texture.from(currentStory.misaki);
-        misaki.visible = true;
-      } else if (misaki) {
-        misaki.visible = false;
+      // 画面揺れアニメーション
+      if (currentStory.se === "sway") {
+        let elapsed = 0;
+        const swayDuration = 750; // 揺れの継続時間 (ミリ秒)
+        const swayAmplitude = 10; // 揺れの振幅 (ピクセル)
+        const swayTicker = new PIXI.Ticker();
+        swayTicker.add((delta) => {
+          elapsed += delta * 16.66; // ミリ秒に変換
+          if (elapsed < swayDuration) {
+            const offsetX = Math.sin(elapsed * 0.05) * swayAmplitude;
+            const offsetY = Math.cos(elapsed * 0.05) * swayAmplitude;
+            stage.x = offsetX;
+            stage.y = offsetY;
+          } else {
+            // 揺れ終了時に位置をリセット
+            stage.x = 0;
+            stage.y = 0;
+            swayTicker.stop();
+          }
+        });
+        swayTicker.start();
+      }
+
+      if (currentStory.se === "choice") {
+        setShowChoices(true); // 選択肢を表示
+      } else {
+        setShowChoices(false); // 選択肢を非表示
       }
     }
   }, [textIndex, storyTexts]);
 
-  return <div ref={canvasRef}></div>;
+  const handleChoiceClick = (choice) => {
+    console.log("選択肢が選ばれました:", choice);
+    setShowChoices(false);
+
+    if (choice === "hoge") {
+      navigate("/chapter1_1");
+    } else if (choice === "fuga") {
+      navigate("/chapter1_2");
+    }
+  };
+
+  return (
+    <div ref={canvasRef}>
+      {showChoices && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "20px"
+          }}
+        >
+          <button
+            style={{
+              width: "400px",
+              height: "200px",
+              fontSize: "32px",
+              backgroundColor: "#4682b4",
+              color: "white",
+              border: "none",
+              borderRadius: "10px",
+              cursor: "pointer"
+            }}
+            onClick={() => handleChoiceClick("hoge")}
+          >
+            「とりあえず、この家をもっと調べてみよう。」
+          </button>
+          <button
+            style={{
+              width: "400px",
+              height: "200px",
+              fontSize: "32px",
+              backgroundColor: "#4682b4",
+              color: "white",
+              border: "none",
+              borderRadius: "10px",
+              cursor: "pointer"
+            }}
+            onClick={() => handleChoiceClick("fuga")}
+          >
+            「樹の家に行って、直接様子を見よう。」
+          </button>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Chapter1;
