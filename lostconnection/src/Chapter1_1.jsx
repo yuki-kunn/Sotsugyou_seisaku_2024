@@ -179,7 +179,7 @@ const Chapter1_1 = () => {
 
       const imagePath = currentStory.image;
 
-      if (currentStory.text === "一章～完～") {
+      if (currentStory.text === "next") {
         navigate("/chapter2");
       }
 

@@ -179,6 +179,10 @@ const Chapter2_2 = () => {
 
       const imagePath = currentStory.image;
 
+      if (currentStory.text === "next") {
+        navigate("/chapter3");
+      }
+
       // 日記 (中央表示)
       if (imagePath === "assets/nikki.png") {
         obj.texture = PIXI.Texture.from(imagePath);

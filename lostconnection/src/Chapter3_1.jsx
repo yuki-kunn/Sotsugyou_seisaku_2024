@@ -206,6 +206,10 @@ const Chapter3_1 = () => {
         partner.visible = false;
       }
 
+      if (currentStory.text === "next") {
+        navigate("/epilogue");
+      }
+
       if (currentStory.se === "sway") {
         let elapsed = 0;
         const swayDuration = 750; // 揺れの継続時間 (ミリ秒)

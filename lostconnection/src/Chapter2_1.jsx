@@ -179,6 +179,10 @@ const Chapter2_1 = () => {
 
       const imagePath = currentStory.image;
 
+      if (currentStory.text === "next") {
+        navigate("/chapter3");
+      }
+
       // 日記 (中央表示)
       if (imagePath === "assets/nikki.png") {
         obj.texture = PIXI.Texture.from(imagePath);
@@ -219,65 +223,8 @@ const Chapter2_1 = () => {
     }
   }, [textIndex, storyTexts]);
 
-  const handleChoiceClick = (choice) => {
-    console.log("選択肢が選ばれました:", choice);
-    setShowChoices(false);
-
-    if (choice === "hoge") {
-      navigate("/chapter2_1");
-    } else if (choice === "fuga") {
-      navigate("/chapter2_2");
-    }
-  };
-
   return (
-    <div ref={canvasRef}>
-      {showChoices && (
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "20px"
-          }}
-        >
-          <button
-            style={{
-              width: "400px",
-              height: "200px",
-              fontSize: "32px",
-              backgroundColor: "#4682b4",
-              color: "white",
-              border: "none",
-              borderRadius: "10px",
-              cursor: "pointer"
-            }}
-            onClick={() => handleChoiceClick("hoge")}
-          >
-            「急いで山小屋に向かおう。」
-          </button>
-          <button
-            style={{
-              width: "400px",
-              height: "200px",
-              fontSize: "32px",
-              backgroundColor: "#4682b4",
-              color: "white",
-              border: "none",
-              borderRadius: "10px",
-              cursor: "pointer"
-            }}
-            onClick={() => handleChoiceClick("fuga")}
-          >
-            「一旦計画を立て直そう。」
-          </button>
-        </div>
-      )}
-    </div>
+    <div ref={canvasRef}></div>
   );
 };
 
