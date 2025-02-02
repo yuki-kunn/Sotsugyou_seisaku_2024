@@ -1,88 +1,123 @@
-import React, { useEffect, useRef, useState } from "react";
-import * as PIXI from "pixi.js";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const GameCanvas = () => {
-  const canvasRef = useRef(null);
-  const appRef = useRef(null);
-  const [textIndex, setTextIndex] = useState(0);
+const App = () => {
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+  const [showModal, setShowModal] = useState(false); // モーダル表示状態
 
-  const storyTexts = [
-    "ここは最初のテキストです。",
-    "次に進むと新しいテキストが表示されます。",
-    "これが最後のテキストです。"
-  ];
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Pixiアプリケーションの作成
-    const app = new PIXI.Application({
-      width: window.innerWidth,
-      height: window.innerHeight,
-      backgroundColor: 0x1099bb,
-      resizeTo: window
-    });
-    appRef.current = app;
-    canvasRef.current.appendChild(app.view);
-
-    // 背景画像の設定
-    const background = PIXI.Sprite.from("/path/to/background.jpg");
-    app.stage.addChild(background);
-
-    // キャラクター画像の設定
-    const character = PIXI.Sprite.from("/path/to/character.png");
-    character.x = 400;
-    character.y = 300;
-    app.stage.addChild(character);
-
-    // テキスト表示の設定
-    const style = new PIXI.TextStyle({
-      fontFamily: "Arial",
-      fontSize: 24,
-      fill: "#ffffff"
-    });
-    const storyText = new PIXI.Text(storyTexts[textIndex], style);
-    storyText.y = app.screen.height - 100; // 下部にテキストを表示
-    storyText.x = 20;
-    app.stage.addChild(storyText);
-
-    // リサイズ時の処理
-    const onResize = () => {
-      app.renderer.resize(window.innerWidth, window.innerHeight);
-      background.width = app.screen.width;
-      background.height = app.screen.height;
-      storyText.y = app.screen.height - 100; // リサイズ後もテキストが下部に表示されるように
+    const handleResize = () => {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     };
 
-    // 初期サイズ設定
-    onResize();
-
-    // リサイズイベントの監視
-    window.addEventListener("resize", onResize);
-
-    // クリックイベントでテキスト進行
-    const onClick = () => {
-      setTextIndex((prevIndex) => (prevIndex + 1) % storyTexts.length);
-    };
-    app.view.addEventListener("click", onClick);
-
-    // クリーンアップ
+    window.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener("resize", onResize);
-      app.view.removeEventListener("click", onClick);
-      app.destroy(true, { children: true });
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
-  // テキスト更新の監視
-  useEffect(() => {
-    if (appRef.current) {
-      const storyText = appRef.current.stage.children.find(
-        (child) => child instanceof PIXI.Text
-      );
-      storyText.text = storyTexts[textIndex];
-    }
-  }, [textIndex]);
+  return (
+    <div
+      style={{
+        width: `${windowSize.width}px`,
+        height: `${windowSize.height}px`
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+          backgroundColor: "#282c34",
+          color: "#ffffff",
+          textAlign: "center"
+        }}
+      >
+        <h1 style={{ fontSize: "3rem", marginBottom: "1rem" }}>LostConnection</h1>
 
-  return <div ref={canvasRef}></div>;
+        {/* Start ボタン */}
+        <button
+          onClick={() => navigate("/prologue")}
+          style={buttonStyle}
+        >
+          Start
+        </button>
+
+        {/* Chapter ボタン */}
+        <button
+          onClick={() => setShowModal(true)}
+          style={{ ...buttonStyle, marginTop: "20px", backgroundColor: "#ffcc00" }}
+        >
+          Chapter
+        </button>
+      </div>
+
+      {/* モーダル（showModal が true のとき表示） */}
+      {showModal && (
+        <div
+          style={modalOverlayStyle}
+          onClick={() => setShowModal(false)} // モーダル外をクリックで閉じる
+        >
+          <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
+            <h2 style={{ marginBottom: "20px" }}>Select Chapter</h2>
+            
+            <button onClick={() => navigate("/prologue")} style={buttonStyle}>Prologue</button>
+            <button onClick={() => navigate("/chapter1")} style={buttonStyle}>Chapter 1</button>
+            <button onClick={() => navigate("/chapter2")} style={buttonStyle}>Chapter 2</button>
+            <button onClick={() => navigate("/chapter3")} style={buttonStyle}>Chapter 3</button>
+            <button onClick={() => navigate("/epilogue")} style={buttonStyle}>Epilogue</button>
+
+            <button onClick={() => setShowModal(false)} style={{ ...buttonStyle, marginTop: "20px", backgroundColor: "#ff4444" }}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
-export default GameCanvas;
+// ボタンのスタイル
+const buttonStyle = {
+  fontSize: "1.5rem",
+  padding: "0.5rem 2rem",
+  backgroundColor: "#61dafb",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  width: "250px"
+};
+
+// モーダルのオーバーレイ（背景）
+const modalOverlayStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center"
+};
+
+// モーダルのスタイル
+const modalStyle = {
+  backgroundColor: "#fff",
+  padding: "20px",
+  borderRadius: "10px",
+  textAlign: "center",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "10px"
+};
+
+export default App;
