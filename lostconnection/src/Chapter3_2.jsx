@@ -181,6 +181,10 @@ const Chapter3_2 = () => {
       const imagePath = currentStory.image;
       const soundEffect = currentStory.se; // SEカラムの値を取得
 
+      if (currentStory.text === "next") {
+        navigate("/epilogue");
+      }
+
       // 日記 (中央表示)
       if (imagePath === "assets/nikki.png") {
         obj.texture = PIXI.Texture.from(imagePath);
